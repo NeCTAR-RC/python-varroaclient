@@ -3,21 +3,29 @@ Section: unknown
 Priority: optional
 Maintainer: Sam Morrison <sorrison@gmail.com>
 Build-Depends:
- debhelper (>= 9),
+ debhelper-compat (= 13),
+ dh-python,
+ openstack-pkg-tools,
  python3-all (>=3.2),
+ python3-pbr,
  python3-setuptools,
- python3-pip,
+ python3-sphinx,
+Build-Depends-Indep:
  python3-mock,
  python3-testtools,
  python3-requests-mock,
  python3-fixtures,
+ python3-freezegun,
  python3-requests,
  python3-keystoneauth1,
  python3-osc-lib,
  python3-nectarclient-lib,
- dh-python,
-Standards-Version: 3.9.5
+ python3-stestr (>= 2.0.0),
+ python3-subunit (>= 1.0.0),
+ subunit,
+Standards-Version: 4.6.1
 Homepage: https://github.com/NeCTAR-RC/python-varroaclient
+Testsuite: autopkgtest-pkg-python
 
 Package: python3-varroaclient
 Architecture: any
