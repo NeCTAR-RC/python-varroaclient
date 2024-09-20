@@ -15,6 +15,8 @@ from nectarclient_lib import exceptions
 
 from varroaclient import client
 from varroaclient.v1 import ip_usage
+from varroaclient.v1 import security_risk_types
+from varroaclient.v1 import security_risks
 
 
 class Client(object):
@@ -32,3 +34,7 @@ class Client(object):
         self.http_client = client.SessionClient(
             session, service_type=service_type, **kwargs)
         self.ip_usage = ip_usage.IPUsageManager(self.http_client)
+        self.security_risks = security_risks.SecurityRiskManager(
+            self.http_client)
+        self.security_risk_types = security_risk_types.SecurityRiskTypeManager(
+            self.http_client)

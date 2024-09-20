@@ -19,7 +19,7 @@ class IPUsage(base.Resource):
     date_fields = ['start', 'end']
 
     def __repr__(self):
-        return "<IPUsage %s>" % self.id
+        return "<IPUsage %s>" % self.ip
 
 
 class IPUsageManager(base.BasicManager):

@@ -12,14 +12,17 @@
 
 import re
 from unittest import mock
+from urllib import parse
 
 from nectarclient_lib.tests.unit import fakes
 from nectarclient_lib.tests.unit import utils
-from six.moves.urllib import parse
+
 
 from varroaclient import client as base_client
 from varroaclient.v1 import client
 from varroaclient.v1 import ip_usage
+from varroaclient.v1 import security_risk_types
+from varroaclient.v1 import security_risks
 
 
 # regex to compare callback to result of get_endpoint()
@@ -44,6 +47,25 @@ generic_ip_usage = {
     "end": None
 }
 
+generic_sr_type = {
+    "id": "64471818-c829-4839-8aa7-8393fa050438",
+    "name": "db-exposed",
+    "description": "Database service exposed to the Internet"
+}
+
+generic_sr = {
+    "type": generic_sr_type,
+    "id": "27b856fb-fc35-43b6-a539-704fc6fb19ad",
+    "status": "PROCESSED",
+    "time": "2024-09-16T15:20:45+00:00",
+    "ipaddress": "203.0.113.1",
+    "port": None,
+    "expires": "2024-09-20T23:46:45+00:00",
+    "project_id": "094ae1d2c08f4eddb434a9d9db71ab40",
+    "resource_id": "218d88fc-df13-445f-b57a-687b3d84fca5",
+    "resource_type": "instance"
+}
+
 
 class FakeClient(fakes.FakeClient, client.Client):
 
@@ -51,6 +73,10 @@ class FakeClient(fakes.FakeClient, client.Client):
         client.Client.__init__(self, session=mock.Mock())
         self.http_client = FakeSessionClient(**kwargs)
         self.ip_usage = ip_usage.IPUsageManager(self.http_client)
+        self.security_risks = security_risks.SecurityRiskManager(
+            self.http_client)
+        self.security_risk_types = security_risk_types.SecurityRiskTypeManager(
+            self.http_client)
 
 
 class FakeSessionClient(base_client.SessionClient):
@@ -124,3 +150,92 @@ class FakeSessionClient(base_client.SessionClient):
     def get_v1_ip_usage(self, **kw):
         ip_usage_list = [generic_ip_usage]
         return (200, {}, ip_usage_list)
+
+    def get_v1_security_risks(self, **kw):
+        security_risks = [
+            {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "time": "2024-03-15T14:30:00Z",
+                "type": generic_sr_type,
+                "expires": "2024-03-22T14:30:00Z",
+                "ipaddress": "192.168.1.100",
+                "port": 22
+            },
+            {
+                "id": "550e8400-e29b-41d4-a716-446655440001",
+                "time": "2024-03-15T15:45:00Z",
+                "type": generic_sr_type,
+                "expires": "2024-03-18T15:45:00Z",
+                "ipaddress": "192.168.1.101",
+                "port": None
+            }
+        ]
+        return (200, {}, security_risks)
+
+    def get_v1_security_risks_risk_id(self, **kw):
+        risk_detail = {
+            "id": "550e8400-e29b-41d4-a716-446655440001",
+            "time": "2024-03-15T14:30:00Z",
+            "type": generic_sr_type,
+            "expires": "2024-03-22T14:30:00Z",
+            "ipaddress": "192.168.1.100",
+            "port": 22
+        }
+        return (200, {}, risk_detail)
+
+    def delete_v1_security_risks_risk_id(self, **kw):
+        return (204, {}, '')
+
+    def post_v1_security_risks(self, **kw):
+        new_risk = {
+            "id": "550e8400-e29b-41d4-a716-446655440002",
+            "time": kw.get('time', "2024-03-16T10:00:00Z"),
+            "type": kw.get('type_id', generic_sr_type),
+            "expires": kw.get('expires', "2024-03-23T10:00:00Z"),
+            "ipaddress": kw.get('ipaddress', "192.168.1.102"),
+            "port": kw.get('port', 80)
+        }
+        return (201, {}, new_risk)
+
+    def get_v1_security_risk_types(self, **kw):
+        security_risk_types = [
+            {
+                "id": "type-id-1",
+                "name": "Test Risk Type 1",
+                "description": "This is test risk type 1"
+            },
+            {
+                "id": "type-id-2",
+                "name": "Test Risk Type 2",
+                "description": "This is test risk type 2"
+            }
+        ]
+        return (200, {}, security_risk_types)
+
+    def get_v1_security_risk_types_type_id(self, **kw):
+        risk_type_detail = {
+            "id": "type-id-1",
+            "name": "Test Risk Type 1",
+            "description": "This is test risk type 1"
+        }
+        return (200, {}, risk_type_detail)
+
+    def delete_v1_security_risk_types_type_id(self, **kw):
+        return (204, {}, '')
+
+    def post_v1_security_risk_types(self, **kw):
+        new_risk_type = {
+            "id": "new-type-id",
+            "name": kw.get('name', "New Risk Type"),
+            "description": kw.get('description', "This is a new risk type")
+        }
+        return (201, {}, new_risk_type)
+
+    def patch_v1_security_risk_types_type_id(self, **kw):
+        updated_risk_type = {
+            "id": "type-id-1",
+            "name": kw.get('name', "Updated Risk Type"),
+            "description": kw.get(
+                'description', "This is an updated risk type")
+        }
+        return (200, {}, updated_risk_type)
