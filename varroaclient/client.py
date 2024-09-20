@@ -18,30 +18,26 @@ import varroaclient
 
 
 def Client(version, *args, **kwargs):
-    module = 'varroaclient.v%s.client' % version
+    module = f"varroaclient.v{version}.client"
     module = importutils.import_module(module)
-    client_class = getattr(module, 'Client')
+    client_class = getattr(module, "Client")
     return client_class(*args, **kwargs)
 
 
 class SessionClient(adapter.Adapter):
-
-    client_name = 'python-varroaclient'
+    client_name = "python-varroaclient"
     client_version = varroaclient.__version__
 
     def request(self, url, method, **kwargs):
-        kwargs.setdefault('headers', kwargs.get('headers', {}))
+        kwargs.setdefault("headers", kwargs.get("headers", {}))
         # NOTE(sorrison): The standard call raises errors from
         # keystoneauth, where we need to raise the varroaclient errors.
-        raise_exc = kwargs.pop('raise_exc', True)
-        resp = super(SessionClient, self).request(url,
-                                                  method,
-                                                  raise_exc=False,
-                                                  **kwargs)
+        raise_exc = kwargs.pop("raise_exc", True)
+        resp = super().request(url, method, raise_exc=False, **kwargs)
 
         if raise_exc and resp.status_code >= 400:
             raise exceptions.from_response(resp, url, method)
         # NOTE(sorrison): Deletes don't return json body
         if resp.status_code == 204:
-            return resp, '{}'
+            return resp, "{}"
         return resp, resp.json()

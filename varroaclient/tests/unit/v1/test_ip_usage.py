@@ -18,14 +18,13 @@ from varroaclient.v1 import ip_usage
 
 
 class IPUsageTest(utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.cs = fakes.FakeClient()
 
     def test_ip_usage_list(self):
         ul = self.cs.ip_usage.list()
-        self.cs.assert_called('GET', '/v1/ip-usage/')
+        self.cs.assert_called("GET", "/v1/ip-usage/")
         for u in ul:
             self.assertIsInstance(u, ip_usage.IPUsage)
         self.assertEqual(1, len(ul))

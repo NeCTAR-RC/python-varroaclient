@@ -19,22 +19,25 @@ from varroaclient.v1 import security_risk_types
 from varroaclient.v1 import security_risks
 
 
-class Client(object):
+class Client:
     """Client for Varroa v1 API
     :param string session: session
     :type session: :py:class:`keystoneauth.adapter.Adapter`
     """
 
-    def __init__(self, session=None, service_type='security',
-                 **kwargs):
+    def __init__(self, session=None, service_type="security", **kwargs):
         """Initialize a new client for the Varroa v1 API."""
         if session is None:
             raise exceptions.ClientException(
-                message='Session is required argument')
+                message="Session is required argument"
+            )
         self.http_client = client.SessionClient(
-            session, service_type=service_type, **kwargs)
+            session, service_type=service_type, **kwargs
+        )
         self.ip_usage = ip_usage.IPUsageManager(self.http_client)
         self.security_risks = security_risks.SecurityRiskManager(
-            self.http_client)
+            self.http_client
+        )
         self.security_risk_types = security_risk_types.SecurityRiskTypeManager(
-            self.http_client)
+            self.http_client
+        )

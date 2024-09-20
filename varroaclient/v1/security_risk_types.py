@@ -15,25 +15,23 @@ from nectarclient_lib import base
 
 
 class SecurityRiskType(base.Resource):
-
     def __repr__(self):
-        return "<SecurityRiskType %s>" % self.id
+        return f"<SecurityRiskType {self.id}>"
 
 
 class SecurityRiskTypeManager(base.BasicManager):
-
-    base_url = 'v1/security-risk-types'
+    base_url = "v1/security-risk-types"
     resource_class = SecurityRiskType
 
     def update(self, security_risk_type_id, **kwargs):
-        return self._update('/%s/%s/' % (self.base_url, security_risk_type_id),
-                            data=kwargs)
+        return self._update(
+            f"/{self.base_url}/{security_risk_type_id}/", data=kwargs
+        )
 
     def delete(self, security_risk_type_id):
-        return self._delete('/%s/%s/' % (self.base_url, security_risk_type_id))
+        return self._delete(f"/{self.base_url}/{security_risk_type_id}/")
 
     def create(self, name, description):
-        data = {'name': name,
-                'description': description}
+        data = {"name": name, "description": description}
 
-        return self._create("/%s/" % self.base_url, data=data)
+        return self._create(f"/{self.base_url}/", data=data)

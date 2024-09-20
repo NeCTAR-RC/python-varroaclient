@@ -14,13 +14,13 @@
 from osc_lib import utils
 
 
-DEFAULT_API_VERSION = '1'
+DEFAULT_API_VERSION = "1"
 
 # Required by the OSC plugin interface
-API_NAME = 'varroa'
-API_VERSION_OPTION = 'os_varroa_api_version'
+API_NAME = "varroa"
+API_VERSION_OPTION = "os_varroa_api_version"
 API_VERSIONS = {
-    '1': 'varroaclient.v1.client.Client',
+    "1": "varroaclient.v1.client.Client",
 }
 
 
@@ -34,13 +34,13 @@ def make_client(instance):
     :param ClientManager instance: The ClientManager that owns the new client
     """
     plugin_client = utils.get_client_class(
-        API_NAME,
-        instance._api_version[API_NAME],
-        API_VERSIONS)
+        API_NAME, instance._api_version[API_NAME], API_VERSIONS
+    )
 
     endpoint = instance._cli_options.varroa_endpoint
-    client = plugin_client(session=instance.session,
-                           endpoint_override=endpoint)
+    client = plugin_client(
+        session=instance.session, endpoint_override=endpoint
+    )
     return client
 
 
@@ -56,13 +56,15 @@ def build_option_parser(parser):
         initialized by OpenStackShell.
     """
     parser.add_argument(
-        '--os-varroa-api-version',
-        metavar='<varroa-api-version>',
-        help='Warre API version, default='
-             + DEFAULT_API_VERSION
-             + ' (Env: OS_WARRE_API_VERSION)')
+        "--os-varroa-api-version",
+        metavar="<varroa-api-version>",
+        help="Warre API version, default="
+        + DEFAULT_API_VERSION
+        + " (Env: OS_WARRE_API_VERSION)",
+    )
     parser.add_argument(
-        '--os-varroa-endpoint',
-        metavar='<varroa-endpoint>',
-        help='Warre API endpoint')
+        "--os-varroa-endpoint",
+        metavar="<varroa-endpoint>",
+        help="Warre API endpoint",
+    )
     return parser

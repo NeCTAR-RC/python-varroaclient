@@ -28,8 +28,7 @@ from varroaclient.v1 import security_risks
 # regex to compare callback to result of get_endpoint()
 # checks version number (vX or vX.X where X is a number)
 # and also checks if the id is on the end
-ENDPOINT_RE = re.compile(
-    r"^get_http:__varroa_api:8774_v\d(_\d)?_\w{32}$")
+ENDPOINT_RE = re.compile(r"^get_http:__varroa_api:8774_v\d(_\d)?_\w{32}$")
 
 # accepts formats like v2 or v2.1
 ENDPOINT_TYPE_RE = re.compile(r"^v\d(\.\d)?$")
@@ -44,13 +43,13 @@ generic_ip_usage = {
     "resource_id": "a8c4a8d3-78b5-43ac-8dc1-1c9963cd7627",
     "resource_type": "instance",
     "start": "2024-09-10T00:29:15+00:00",
-    "end": None
+    "end": None,
 }
 
 generic_sr_type = {
     "id": "64471818-c829-4839-8aa7-8393fa050438",
     "name": "db-exposed",
-    "description": "Database service exposed to the Internet"
+    "description": "Database service exposed to the Internet",
 }
 
 generic_sr = {
@@ -63,44 +62,43 @@ generic_sr = {
     "expires": "2024-09-20T23:46:45+00:00",
     "project_id": "094ae1d2c08f4eddb434a9d9db71ab40",
     "resource_id": "218d88fc-df13-445f-b57a-687b3d84fca5",
-    "resource_type": "instance"
+    "resource_type": "instance",
 }
 
 
 class FakeClient(fakes.FakeClient, client.Client):
-
     def __init__(self, *args, **kwargs):
         client.Client.__init__(self, session=mock.Mock())
         self.http_client = FakeSessionClient(**kwargs)
         self.ip_usage = ip_usage.IPUsageManager(self.http_client)
         self.security_risks = security_risks.SecurityRiskManager(
-            self.http_client)
+            self.http_client
+        )
         self.security_risk_types = security_risk_types.SecurityRiskTypeManager(
-            self.http_client)
+            self.http_client
+        )
 
 
 class FakeSessionClient(base_client.SessionClient):
-
     def __init__(self, *args, **kwargs):
-
         self.callstack = []
         self.visited = []
         self.auth = mock.Mock()
         self.session = mock.Mock()
-        self.service_type = 'service_type'
+        self.service_type = "service_type"
         self.service_name = None
         self.endpoint_override = None
         self.interface = None
         self.region_name = None
         self.version = None
-        self.auth.get_auth_ref.return_value.project_id = 'tenant_id'
+        self.auth.get_auth_ref.return_value.project_id = "tenant_id"
         # determines which endpoint to return in get_endpoint()
         # NOTE(augustina): this is a hacky workaround, ultimately
         # we need to fix our whole mocking architecture (fixtures?)
-        if 'endpoint_type' in kwargs:
-            self.endpoint_type = kwargs['endpoint_type']
+        if "endpoint_type" in kwargs:
+            self.endpoint_type = kwargs["endpoint_type"]
         else:
-            self.endpoint_type = 'endpoint_type'
+            self.endpoint_type = "endpoint_type"
         self.logger = mock.MagicMock()
 
     def request(self, url, method, **kwargs):
@@ -108,43 +106,47 @@ class FakeSessionClient(base_client.SessionClient):
 
     def _cs_request(self, url, method, **kwargs):
         # Check that certain things are called correctly
-        if method in ['GET', 'DELETE']:
-            assert 'data' not in kwargs
-        elif method == 'PUT':
-            assert 'data' in kwargs
+        if method in ["GET", "DELETE"]:
+            assert "data" not in kwargs
+        elif method == "PUT":
+            assert "data" in kwargs
 
         if url is not None:
             # Call the method
             args = parse.parse_qsl(parse.urlparse(url)[4])
             kwargs.update(args)
-            munged_url = url.rsplit('?', 1)[0]
-            munged_url = munged_url.strip('/').replace('/', '_')
-            munged_url = munged_url.replace('.', '_')
-            munged_url = munged_url.replace('-', '_')
-            munged_url = munged_url.replace(' ', '_')
-            munged_url = munged_url.replace('!', '_')
-            munged_url = munged_url.replace('@', '_')
-            munged_url = munged_url.replace('%20', '_')
-            munged_url = munged_url.replace('%3A', '_')
-            callback = "%s_%s" % (method.lower(), munged_url)
+            munged_url = url.rsplit("?", 1)[0]
+            munged_url = munged_url.strip("/").replace("/", "_")
+            munged_url = munged_url.replace(".", "_")
+            munged_url = munged_url.replace("-", "_")
+            munged_url = munged_url.replace(" ", "_")
+            munged_url = munged_url.replace("!", "_")
+            munged_url = munged_url.replace("@", "_")
+            munged_url = munged_url.replace("%20", "_")
+            munged_url = munged_url.replace("%3A", "_")
+            callback = f"{method.lower()}_{munged_url}"
 
         if not hasattr(self, callback):
-            raise AssertionError('Called unknown API method: %s %s, '
-                                 'expected fakes method name: %s' %
-                                 (method, url, callback))
+            raise AssertionError(
+                f"Called unknown API method: {method} {url}, "
+                f"expected fakes method name: {callback}"
+            )
 
         # Note the call
         self.visited.append(callback)
-        self.callstack.append((method, url, kwargs.get('data'),
-                               kwargs.get('params')))
+        self.callstack.append(
+            (method, url, kwargs.get("data"), kwargs.get("params"))
+        )
 
         status, headers, data = getattr(self, callback)(**kwargs)
 
-        r = utils.TestResponse({
-            "status_code": status,
-            "text": data,
-            "headers": headers,
-        })
+        r = utils.TestResponse(
+            {
+                "status_code": status,
+                "text": data,
+                "headers": headers,
+            }
+        )
         return r, data
 
     def get_v1_ip_usage(self, **kw):
@@ -159,7 +161,7 @@ class FakeSessionClient(base_client.SessionClient):
                 "type": generic_sr_type,
                 "expires": "2024-03-22T14:30:00Z",
                 "ipaddress": "192.168.1.100",
-                "port": 22
+                "port": 22,
             },
             {
                 "id": "550e8400-e29b-41d4-a716-446655440001",
@@ -167,8 +169,8 @@ class FakeSessionClient(base_client.SessionClient):
                 "type": generic_sr_type,
                 "expires": "2024-03-18T15:45:00Z",
                 "ipaddress": "192.168.1.101",
-                "port": None
-            }
+                "port": None,
+            },
         ]
         return (200, {}, security_risks)
 
@@ -179,21 +181,21 @@ class FakeSessionClient(base_client.SessionClient):
             "type": generic_sr_type,
             "expires": "2024-03-22T14:30:00Z",
             "ipaddress": "192.168.1.100",
-            "port": 22
+            "port": 22,
         }
         return (200, {}, risk_detail)
 
     def delete_v1_security_risks_risk_id(self, **kw):
-        return (204, {}, '')
+        return (204, {}, "")
 
     def post_v1_security_risks(self, **kw):
         new_risk = {
             "id": "550e8400-e29b-41d4-a716-446655440002",
-            "time": kw.get('time', "2024-03-16T10:00:00Z"),
-            "type": kw.get('type_id', generic_sr_type),
-            "expires": kw.get('expires', "2024-03-23T10:00:00Z"),
-            "ipaddress": kw.get('ipaddress', "192.168.1.102"),
-            "port": kw.get('port', 80)
+            "time": kw.get("time", "2024-03-16T10:00:00Z"),
+            "type": kw.get("type_id", generic_sr_type),
+            "expires": kw.get("expires", "2024-03-23T10:00:00Z"),
+            "ipaddress": kw.get("ipaddress", "192.168.1.102"),
+            "port": kw.get("port", 80),
         }
         return (201, {}, new_risk)
 
@@ -202,13 +204,13 @@ class FakeSessionClient(base_client.SessionClient):
             {
                 "id": "type-id-1",
                 "name": "Test Risk Type 1",
-                "description": "This is test risk type 1"
+                "description": "This is test risk type 1",
             },
             {
                 "id": "type-id-2",
                 "name": "Test Risk Type 2",
-                "description": "This is test risk type 2"
-            }
+                "description": "This is test risk type 2",
+            },
         ]
         return (200, {}, security_risk_types)
 
@@ -216,26 +218,27 @@ class FakeSessionClient(base_client.SessionClient):
         risk_type_detail = {
             "id": "type-id-1",
             "name": "Test Risk Type 1",
-            "description": "This is test risk type 1"
+            "description": "This is test risk type 1",
         }
         return (200, {}, risk_type_detail)
 
     def delete_v1_security_risk_types_type_id(self, **kw):
-        return (204, {}, '')
+        return (204, {}, "")
 
     def post_v1_security_risk_types(self, **kw):
         new_risk_type = {
             "id": "new-type-id",
-            "name": kw.get('name', "New Risk Type"),
-            "description": kw.get('description', "This is a new risk type")
+            "name": kw.get("name", "New Risk Type"),
+            "description": kw.get("description", "This is a new risk type"),
         }
         return (201, {}, new_risk_type)
 
     def patch_v1_security_risk_types_type_id(self, **kw):
         updated_risk_type = {
             "id": "type-id-1",
-            "name": kw.get('name', "Updated Risk Type"),
+            "name": kw.get("name", "Updated Risk Type"),
             "description": kw.get(
-                'description', "This is an updated risk type")
+                "description", "This is an updated risk type"
+            ),
         }
         return (200, {}, updated_risk_type)

@@ -15,14 +15,12 @@ from nectarclient_lib import base
 
 
 class IPUsage(base.Resource):
-
-    date_fields = ['start', 'end']
+    date_fields = ["start", "end"]
 
     def __repr__(self):
-        return "<IPUsage %s>" % self.ip
+        return f"<IPUsage {self.ip}>"
 
 
 class IPUsageManager(base.BasicManager):
-
-    base_url = 'v1/ip-usage'
+    base_url = "v1/ip-usage"
     resource_class = IPUsage

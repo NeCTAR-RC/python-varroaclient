@@ -14,4 +14,4 @@
 import pbr.version
 
 
-__version__ = pbr.version.VersionInfo('python-varroaclient').version_string()
+__version__ = pbr.version.VersionInfo("python-varroaclient").version_string()

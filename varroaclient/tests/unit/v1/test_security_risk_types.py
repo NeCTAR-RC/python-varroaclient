@@ -20,45 +20,46 @@ from varroaclient.v1 import security_risk_types
 
 
 class SecurityRiskTypesTest(utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.cs = fakes.FakeClient()
 
     def test_security_risk_types_list(self):
         srt_list = self.cs.security_risk_types.list()
-        self.cs.assert_called('GET', '/v1/security-risk-types/')
+        self.cs.assert_called("GET", "/v1/security-risk-types/")
         for srt in srt_list:
             self.assertIsInstance(srt, security_risk_types.SecurityRiskType)
         self.assertEqual(2, len(srt_list))
 
     def test_security_risk_types_get(self):
-        srt = self.cs.security_risk_types.get('type-id')
-        self.cs.assert_called('GET', '/v1/security-risk-types/type-id/')
+        srt = self.cs.security_risk_types.get("type-id")
+        self.cs.assert_called("GET", "/v1/security-risk-types/type-id/")
         self.assertIsInstance(srt, security_risk_types.SecurityRiskType)
 
     def test_security_risk_types_delete(self):
-        self.cs.security_risk_types.delete('type-id')
-        self.cs.assert_called('DELETE', '/v1/security-risk-types/type-id/')
+        self.cs.security_risk_types.delete("type-id")
+        self.cs.assert_called("DELETE", "/v1/security-risk-types/type-id/")
 
     def test_security_risk_types_create(self):
         data = {
-            'name': 'Test Risk Type',
-            'description': 'This is a test risk type'
+            "name": "Test Risk Type",
+            "description": "This is a test risk type",
         }
         srt = self.cs.security_risk_types.create(**data)
         json_data = json.dumps(data)
-        self.cs.assert_called('POST', '/v1/security-risk-types/',
-                              data=json_data)
+        self.cs.assert_called(
+            "POST", "/v1/security-risk-types/", data=json_data
+        )
         self.assertIsInstance(srt, security_risk_types.SecurityRiskType)
 
     def test_security_risk_types_update(self):
         data = {
-            'name': 'Updated Risk Type',
-            'description': 'This is an updated risk type'
+            "name": "Updated Risk Type",
+            "description": "This is an updated risk type",
         }
-        srt = self.cs.security_risk_types.update('type-id', **data)
+        srt = self.cs.security_risk_types.update("type-id", **data)
         json_data = json.dumps(data)
-        self.cs.assert_called('PATCH', '/v1/security-risk-types/type-id/',
-                              data=json_data)
+        self.cs.assert_called(
+            "PATCH", "/v1/security-risk-types/type-id/", data=json_data
+        )
         self.assertIsInstance(srt, security_risk_types.SecurityRiskType)
