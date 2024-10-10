@@ -20,6 +20,7 @@ Build-Depends-Indep:
  python3-keystoneauth1,
  python3-osc-lib,
  python3-nectarclient-lib,
+ python3-openstackclient,
  python3-stestr (>= 2.0.0),
  python3-subunit (>= 1.0.0),
  subunit,
