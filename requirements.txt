@@ -1,5 +1,6 @@
+pbr
 oslo.utils
 keystoneauth1
 osc-lib
 nectarclient-lib>=1.0.0,<2.0.0
-pbr
+python-openstackclient
