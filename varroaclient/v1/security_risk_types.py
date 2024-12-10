@@ -18,6 +18,9 @@ class SecurityRiskType(base.Resource):
     def __repr__(self):
         return f"<SecurityRiskType {self.id}>"
 
+    def __str__(self):
+        return self.display_name or self.name
+
 
 class SecurityRiskTypeManager(base.BasicManager):
     base_url = "v1/security-risk-types"
