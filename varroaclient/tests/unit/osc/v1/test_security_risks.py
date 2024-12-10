@@ -29,7 +29,18 @@ class TestSecurityRisks(base.OSCTestCase):
 
         columns, data = command.take_action(parsed_args)
 
-        self.assertEqual(columns, ["id", "type", "time", "ipaddress", "port"])
+        self.assertEqual(
+            columns,
+            [
+                "id",
+                "type",
+                "time",
+                "ipaddress",
+                "port",
+                'resource_type',
+                'resource_id',
+            ],
+        )
         self.assertEqual(list(data), [])
 
     def test_list_security_risks_with_type(self):
@@ -43,7 +54,18 @@ class TestSecurityRisks(base.OSCTestCase):
 
         columns, data = command.take_action(parsed_args)
 
-        self.assertEqual(columns, ["id", "type", "time", "ipaddress", "port"])
+        self.assertEqual(
+            columns,
+            [
+                "id",
+                "type",
+                "time",
+                "ipaddress",
+                "port",
+                'resource_type',
+                'resource_id',
+            ],
+        )
         self.assertEqual(list(data), [])
 
     def test_show_security_risk(self):

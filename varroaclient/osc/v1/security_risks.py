@@ -41,6 +41,16 @@ class ListSecurityRisks(command.Lister):
             "--type", metavar="<type>", help="Filter by type (name or ID)"
         )
         parser.add_argument(
+            "--resource-id",
+            metavar="<resource_id>",
+            help="Filter by resource ID",
+        )
+        parser.add_argument(
+            "--resource-type",
+            metavar="<resource_type>",
+            help="Filter by resource type",
+        )
+        parser.add_argument(
             "--project-domain",
             default="default",
             metavar="<project_domain>",
@@ -53,7 +63,15 @@ class ListSecurityRisks(command.Lister):
         self.log.debug("take_action(%s)", parsed_args)
         client = self.app.client_manager.varroa
         kwargs = {}
-        columns = ["id", "type", "time", "ipaddress", "port"]
+        columns = [
+            "id",
+            "type",
+            "time",
+            "ipaddress",
+            "port",
+            "resource_type",
+            "resource_id",
+        ]
         if parsed_args.all_projects:
             kwargs["all_projects"] = True
             columns = [
@@ -83,6 +101,10 @@ class ListSecurityRisks(command.Lister):
                 client.security_risk_types, parsed_args.type
             )
             kwargs["type_id"] = security_risk_type.id
+        if parsed_args.resource_id:
+            kwargs['resource_id'] = parsed_args.resource_id
+        if parsed_args.resource_type:
+            kwargs['resource_type'] = parsed_args.resource_type
         security_risks = client.security_risks.list(**kwargs)
         for r in security_risks:
             r.type = r.type.name
