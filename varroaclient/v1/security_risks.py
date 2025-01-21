@@ -17,7 +17,7 @@ from varroaclient.v1 import security_risk_types
 
 
 class SecurityRisk(base.Resource):
-    date_fields = ["time", "expires"]
+    date_fields = ["time", "expires", "first_seen", "last_seen"]
 
     def __init__(self, manager, info, loaded=False, resp=None):
         super().__init__(manager, info, loaded, resp)
