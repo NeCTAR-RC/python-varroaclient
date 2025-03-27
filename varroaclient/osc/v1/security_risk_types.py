@@ -107,7 +107,12 @@ class UpdateSecurityRiskType(SecurityRiskTypeCommand):
         parser.add_argument(
             "--description",
             metavar="<description>",
-            help="Description of the security_risk_type",
+            help="Description of the security risk type",
+        )
+        parser.add_argument(
+            "--help-url",
+            metavar="<help_url>",
+            help="Help URL for a security risk type",
         )
         return parser
 
@@ -120,6 +125,8 @@ class UpdateSecurityRiskType(SecurityRiskTypeCommand):
         data = {}
         if parsed_args.description:
             data["description"] = parsed_args.description
+        if parsed_args.help_url:
+            data["help_url"] = parsed_args.help_url
         if parsed_args.name:
             data["name"] = parsed_args.name
         security_risk_type = client.security_risk_types.update(

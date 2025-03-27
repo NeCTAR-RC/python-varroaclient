@@ -78,11 +78,13 @@ class TestSecurityRiskTypes(base.OSCTestCase):
         parsed_args.id = "type-id"
         parsed_args.name = "updated_name"
         parsed_args.description = "updated_description"
+        parsed_args.help_url = "https://example.com/help"
 
         security_risk_type = mock.Mock()
         security_risk_type.to_dict.return_value = {
             "id": "type-id",
             "name": "updated_name",
+            "help_url": "https://example.com/helm",
         }
 
         self.client.security_risk_types.update.return_value = (
@@ -95,6 +97,7 @@ class TestSecurityRiskTypes(base.OSCTestCase):
         self.assertIn("name", columns)
         self.assertIn("type-id", data)
         self.assertIn("updated_name", data)
+        self.assertIn("https://example.com/helm", data)
 
     def test_delete_security_risk_type(self):
         command = security_risk_types.DeleteSecurityRiskType(self.app, None)
