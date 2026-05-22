@@ -72,10 +72,5 @@ class ListIPUsage(command.Lister):
         ip_usage = client.ip_usage.list(**kwargs)
         return (
             columns,
-            (
-                osc_utils.get_item_properties(
-                    q, columns, formatters={"start": str, "end": str}
-                )
-                for q in ip_usage
-            ),
+            (osc_utils.get_item_properties(q, columns) for q in ip_usage),
         )
