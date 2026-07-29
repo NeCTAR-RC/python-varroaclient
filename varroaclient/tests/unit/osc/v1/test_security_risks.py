@@ -101,6 +101,54 @@ class TestSecurityRisks(base.OSCTestCase):
         security_risk = mock.Mock()
         security_risk.to_dict.return_value = {"id": "123", "type": "test_type"}
 
+    def test_create_security_risk_resource_first(self):
+        command = security_risks.CreateSecurityRisk(self.app, None)
+        parsed_args = mock.Mock()
+        parsed_args.type = "test_type"
+        parsed_args.time = "2023-01-01T00:00:00+0000"
+        parsed_args.expires = "2023-01-02T00:00:00+0000"
+        parsed_args.ipaddress = None
+        parsed_args.port = None
+        parsed_args.project = "my-project"
+        parsed_args.resource_id = "cluster-uuid"
+        parsed_args.resource_type = "cluster"
+        parsed_args.project_domain = "default"
+
+        security_risk_type = mock.Mock()
+        security_risk_type.id = "type_id"
+
+        security_risk = mock.Mock()
+        security_risk.to_dict.return_value = {"id": "123", "type": "test_type"}
+        self.client.security_risks.create.return_value = security_risk
+
+        project = mock.Mock()
+        project.id = "project-id"
+        with (
+            mock.patch(
+                "varroaclient.osc.v1.security_risks.osc_utils.find_resource",
+                return_value=security_risk_type,
+            ),
+            mock.patch(
+                "varroaclient.osc.v1.security_risks.common.find_project",
+                return_value=project,
+            ),
+            mock.patch(
+                "varroaclient.osc.v1.security_risks.common._get_token_resource"
+            ),
+        ):
+            command.take_action(parsed_args)
+
+        self.client.security_risks.create.assert_called_once_with(
+            type_id="type_id",
+            time="2023-01-01T00:00:00+0000",
+            expires="2023-01-02T00:00:00+0000",
+            ipaddress=None,
+            port=None,
+            resource_id="cluster-uuid",
+            resource_type="cluster",
+            project_id="project-id",
+        )
+
     def test_delete_security_risk(self):
         command = security_risks.DeleteSecurityRisk(self.app, None)
         parsed_args = mock.Mock()

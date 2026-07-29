@@ -57,6 +57,21 @@ class SecurityRisksTest(utils.TestCase):
         self.cs.assert_called("POST", "/v1/security-risks/", data=json_data)
         self.assertIsInstance(sr, security_risks.SecurityRisk)
 
+    def test_security_risks_create_resource_first(self):
+        data = {
+            "time": "2023-04-10T12:00:00Z",
+            "expires": "2023-04-11T12:00:00Z",
+            "type_id": "type-id",
+            "project_id": "094ae1d2c08f4eddb434a9d9db71ab40",
+            "resource_id": "218d88fc-df13-445f-b57a-687b3d84fca5",
+            "resource_type": "cluster",
+        }
+        sr = self.cs.security_risks.create(**data)
+        # Unset fields (ipaddress, port) are omitted from the payload.
+        json_data = json.dumps(data)
+        self.cs.assert_called("POST", "/v1/security-risks/", data=json_data)
+        self.assertIsInstance(sr, security_risks.SecurityRisk)
+
     def test_security_risk_to_dict(self):
         # Create a security risk object
         risk_data = {

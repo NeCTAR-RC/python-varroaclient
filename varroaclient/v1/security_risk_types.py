@@ -34,7 +34,11 @@ class SecurityRiskTypeManager(base.BasicManager):
     def delete(self, security_risk_type_id):
         return self._delete(f"/{self.base_url}/{security_risk_type_id}/")
 
-    def create(self, name, description):
+    def create(self, name, description, display_name=None, help_url=None):
         data = {"name": name, "description": description}
+        if display_name is not None:
+            data["display_name"] = display_name
+        if help_url is not None:
+            data["help_url"] = help_url
 
         return self._create(f"/{self.base_url}/", data=data)
