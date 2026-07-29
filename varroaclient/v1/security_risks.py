@@ -41,12 +41,34 @@ class SecurityRiskManager(base.BasicManager):
     def delete(self, security_risk_id):
         return self._delete(f"/{self.base_url}/{security_risk_id}/")
 
-    def create(self, time, expires, type_id, ipaddress, port=None):
+    def create(
+        self,
+        time,
+        expires,
+        type_id,
+        ipaddress=None,
+        port=None,
+        project_id=None,
+        resource_id=None,
+        resource_type=None,
+    ):
+        """Create a security risk.
+
+        A risk is reported either by IP address (ipaddress, optionally
+        port) or by resource (project_id, resource_id and resource_type
+        together), never both.
+        """
         data = {
             "time": time,
             "expires": expires,
             "type_id": type_id,
             "ipaddress": ipaddress,
             "port": port,
+            "project_id": project_id,
+            "resource_id": resource_id,
+            "resource_type": resource_type,
         }
+        # Omit unset fields so payloads stay compatible with servers that
+        # predate resource-first risks.
+        data = {k: v for k, v in data.items() if v is not None}
         return self._create(f"/{self.base_url}/", data=data)

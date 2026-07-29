@@ -168,6 +168,30 @@ class CreateSecurityRisk(command.ShowOne):
         parser.add_argument(
             "-p", "--port", metavar="<port>", default=None, help="Port"
         )
+        parser.add_argument(
+            "--project",
+            metavar="<project>",
+            help="Project (name or ID) owning the resource "
+            "(resource-first risks, requires --resource-id and "
+            "--resource-type)",
+        )
+        parser.add_argument(
+            "--resource-id",
+            metavar="<resource_id>",
+            help="Resource ID (resource-first risks)",
+        )
+        parser.add_argument(
+            "--resource-type",
+            metavar="<resource_type>",
+            help="Resource type, e.g. instance or cluster "
+            "(resource-first risks)",
+        )
+        parser.add_argument(
+            "--project-domain",
+            default="default",
+            metavar="<project_domain>",
+            help="Project domain (name or ID)",
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -184,7 +208,19 @@ class CreateSecurityRisk(command.ShowOne):
             "expires": parsed_args.expires,
             "ipaddress": parsed_args.ipaddress,
             "port": parsed_args.port,
+            "resource_id": parsed_args.resource_id,
+            "resource_type": parsed_args.resource_type,
         }
+        if parsed_args.project:
+            identity_client = self.app.client_manager.identity
+            project = common.find_project(
+                identity_client,
+                common._get_token_resource(
+                    identity_client, "project", parsed_args.project
+                ),
+                parsed_args.project_domain,
+            )
+            fields["project_id"] = project.id
 
         security_risk = client.security_risks.create(**fields)
         security_risk_dict = security_risk.to_dict()
