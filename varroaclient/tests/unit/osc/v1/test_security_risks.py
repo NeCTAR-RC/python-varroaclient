@@ -86,20 +86,77 @@ class TestSecurityRisks(base.OSCTestCase):
         self.assertIn("test", data)
 
     def test_create_security_risk(self):
-        security_risks.CreateSecurityRisk(self.app, None)
+        command = security_risks.CreateSecurityRisk(self.app, None)
         parsed_args = mock.Mock()
         parsed_args.type = "test_type"
         parsed_args.time = "2023-01-01T00:00:00+0000"
         parsed_args.expires = "2023-01-02T00:00:00+0000"
         parsed_args.ipaddress = "192.168.0.1"
         parsed_args.port = 8080
+        parsed_args.project = None
+        parsed_args.resource_id = None
+        parsed_args.resource_type = None
+        parsed_args.notify = None
 
         security_risk_type = mock.Mock()
         security_risk_type.id = "type_id"
-        self.client.security_risk_types.find.return_value = security_risk_type
 
         security_risk = mock.Mock()
         security_risk.to_dict.return_value = {"id": "123", "type": "test_type"}
+        self.client.security_risks.create.return_value = security_risk
+
+        with mock.patch(
+            "varroaclient.osc.v1.security_risks.osc_utils.find_resource",
+            return_value=security_risk_type,
+        ):
+            command.take_action(parsed_args)
+
+        self.client.security_risks.create.assert_called_once_with(
+            type_id="type_id",
+            time="2023-01-01T00:00:00+0000",
+            expires="2023-01-02T00:00:00+0000",
+            ipaddress="192.168.0.1",
+            port=8080,
+            resource_id=None,
+            resource_type=None,
+        )
+
+    def test_create_security_risk_with_notify(self):
+        command = security_risks.CreateSecurityRisk(self.app, None)
+        parsed_args = mock.Mock()
+        parsed_args.type = "test_type"
+        parsed_args.time = "2023-01-01T00:00:00+0000"
+        parsed_args.expires = "2023-01-02T00:00:00+0000"
+        parsed_args.ipaddress = "192.168.0.1"
+        parsed_args.port = 8080
+        parsed_args.project = None
+        parsed_args.resource_id = None
+        parsed_args.resource_type = None
+        parsed_args.notify = True
+
+        security_risk_type = mock.Mock()
+        security_risk_type.id = "type_id"
+
+        security_risk = mock.Mock()
+        security_risk.to_dict.return_value = {"id": "123", "type": "test_type"}
+        self.client.security_risks.create.return_value = security_risk
+
+        with mock.patch(
+            "varroaclient.osc.v1.security_risks.osc_utils.find_resource",
+            return_value=security_risk_type,
+        ):
+            command.take_action(parsed_args)
+
+        self.client.security_risks.create.assert_called_once_with(
+            type_id="type_id",
+            time="2023-01-01T00:00:00+0000",
+            expires="2023-01-02T00:00:00+0000",
+            ipaddress="192.168.0.1",
+            port=8080,
+            resource_id=None,
+            resource_type=None,
+            notify=True,
+        )
 
     def test_create_security_risk_resource_first(self):
         command = security_risks.CreateSecurityRisk(self.app, None)
@@ -113,6 +170,7 @@ class TestSecurityRisks(base.OSCTestCase):
         parsed_args.resource_id = "cluster-uuid"
         parsed_args.resource_type = "cluster"
         parsed_args.project_domain = "default"
+        parsed_args.notify = None
 
         security_risk_type = mock.Mock()
         security_risk_type.id = "type_id"

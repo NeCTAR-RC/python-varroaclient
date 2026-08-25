@@ -192,6 +192,13 @@ class CreateSecurityRisk(command.ShowOne):
             metavar="<project_domain>",
             help="Project domain (name or ID)",
         )
+        parser.add_argument(
+            "--notify",
+            action="store_true",
+            default=None,
+            help="Notify the owning project once the risk has been "
+            "attributed to a resource",
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -221,6 +228,8 @@ class CreateSecurityRisk(command.ShowOne):
                 parsed_args.project_domain,
             )
             fields["project_id"] = project.id
+        if parsed_args.notify:
+            fields["notify"] = True
 
         security_risk = client.security_risks.create(**fields)
         security_risk_dict = security_risk.to_dict()

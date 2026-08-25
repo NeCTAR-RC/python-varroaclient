@@ -51,12 +51,16 @@ class SecurityRiskManager(base.BasicManager):
         project_id=None,
         resource_id=None,
         resource_type=None,
+        notify=None,
     ):
         """Create a security risk.
 
         A risk is reported either by IP address (ipaddress, optionally
         port) or by resource (project_id, resource_id and resource_type
         together), never both.
+
+        When notify is true the owning project is notified once the
+        risk has been attributed to a resource.
         """
         data = {
             "time": time,
@@ -67,6 +71,7 @@ class SecurityRiskManager(base.BasicManager):
             "project_id": project_id,
             "resource_id": resource_id,
             "resource_type": resource_type,
+            "notify": notify,
         }
         # Omit unset fields so payloads stay compatible with servers that
         # predate resource-first risks.

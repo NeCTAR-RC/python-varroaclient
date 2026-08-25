@@ -44,3 +44,7 @@ openstack security risk show <security risk id>
 openstack security risk create -i <ip address> <type> -t <time in following format YYYY-MM-DDTHH:MM:SS+HH:MM> -e <expires in following format YYYY-MM-DDTHH:MM:SS+HH:MM>
 openstack security risk delete <security risk id>
 ```
+
+Pass `--notify` to `security risk create` to have the owning project
+notified (via taynac) once the risk has been attributed to a resource.
+Notifications are off by default.
