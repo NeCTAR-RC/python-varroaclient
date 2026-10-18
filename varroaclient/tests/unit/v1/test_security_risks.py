@@ -12,7 +12,7 @@
 #
 
 from datetime import datetime
-from datetime import timezone
+from datetime import UTC
 import json
 
 from freezegun import freeze_time
@@ -116,14 +116,14 @@ class SecurityRisksTest(utils.TestCase):
         self.assertIsInstance(result["time"], datetime)
         self.assertEqual(
             result["time"],
-            datetime(2024, 9, 16, 15, 20, 45, tzinfo=timezone.utc),
+            datetime(2024, 9, 16, 15, 20, 45, tzinfo=UTC),
         )
         self.assertEqual(result["ipaddress"], "203.0.113.1")
         self.assertIsNone(result["port"])
         self.assertIsInstance(result["expires"], datetime)
         self.assertEqual(
             result["expires"],
-            datetime(2024, 9, 20, 23, 46, 45, tzinfo=timezone.utc),
+            datetime(2024, 9, 20, 23, 46, 45, tzinfo=UTC),
         )
         self.assertEqual(
             result["project_id"], "094ae1d2c08f4eddb434a9d9db71ab40"
